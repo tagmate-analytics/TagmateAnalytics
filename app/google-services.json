@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "295558931669",
+    "project_id": "pocbutton",
+    "storage_bucket": "pocbutton.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295558931669:android:8106dbd7bbd088cff5ee5c",
+        "android_client_info": {
+          "package_name": "com.dada.firebasebutton2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "295558931669-62namt1lh34glq9cur23odnlqfkp0tak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC2Veuig_yFZqAMx6YTuO1PdZ7lviFp1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295558931669-62namt1lh34glq9cur23odnlqfkp0tak.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295558931669:android:b2cbadccdc941853f5ee5c",
+        "android_client_info": {
+          "package_name": "com.dada.pocbutton"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "295558931669-62namt1lh34glq9cur23odnlqfkp0tak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC2Veuig_yFZqAMx6YTuO1PdZ7lviFp1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295558931669-62namt1lh34glq9cur23odnlqfkp0tak.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
