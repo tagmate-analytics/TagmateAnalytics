@@ -43,8 +43,8 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
 
-                groupId = 'com.tagmate.tatvic'
-                artifactId = 'firebase'
+                groupId = 'com.tagmate'
+                artifactId = 'TagmateAnalytics'
                 version = '1.0'
             }
         }
