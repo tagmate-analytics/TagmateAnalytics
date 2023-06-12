@@ -42,6 +42,7 @@ public class TagmateAnalytics {
     String deviceID;
     String packageName;
     boolean firstRun;
+    String deviceName;
 
     private TagmateAnalytics(Context context) {
         Log.d("FIRE_BASE", "FirebaseAnalytics constructor called");
@@ -58,6 +59,8 @@ public class TagmateAnalytics {
         //deviceID
         deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.d("YOUR_APP_ID", "Settings: " + deviceID);
+
+//        deviceName = Settings.Global.getString(context.getContentResolver(), "device_name");
 
         firstRun = sharedPreferences.getBoolean("firstRun", true);
 
@@ -183,16 +186,22 @@ public class TagmateAnalytics {
                     //DeviceId and PackageName
                     try {
 
+                        String modelName = android.os.Build.MODEL;
+                        deviceName = android.os.Build.MANUFACTURER;
+
                         Bundle b3 = new Bundle();
                         b3.putString("packageName", packageName);
                         b3.putString("deviceId", deviceID);
+                        b3.putString("modelName", deviceName);
+                        b3.putString("modelNumber", modelName);
 
 //                        String json = "{\"event_name\":" + "\"" + eventName + "\"" + "," + "\"params\":" + utils.bundleToJsonString3(bundle) + "," + "\"meta\":" + utils.bundleToJsonString3(bundle2) + "}";
                         String json = utils.bundleToJsonString3(b3);
-                        Log.d("OUR_JSON_RES_PACKAGE", json);
+                        Log.d("OUR_JSON_RES_PACKAGE_B3", json);
 
                         // Step 4: Make the POST network call
-                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
+//                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
+                        String urlEndpoint = "http://192.168.2.93:3050/api/v1/debugger/appRequests/check/device";
                         URL url = new URL(urlEndpoint);
                         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
