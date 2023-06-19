@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         button = findViewById(R.id.fireBaseButton);
+
         tagmateAnalytics = TagmateAnalytics.getInstance(this);
 
         Bundle bundle = new Bundle();

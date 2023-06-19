@@ -144,31 +144,101 @@ public class TagmateAnalytics {
             bundle2.putString("app_instance_id", sharedPreferences.getString("APP_INSTANCE_ID", ""));
             bundle2.putString("deviceId", deviceID);
             bundle2.putString("app_package_name", packageName);
+            bundle2.putString("sessionId", currentSessionId);
 
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
 
-                executorService.submit(new Runnable() {
-                    @Override
-                    public void run() {
+                    //DeviceId and PackageName
+                    try {
 
-                        //DeviceId and PackageName
-                        try {
+                        String modelName = android.os.Build.MODEL;
+                        deviceName = android.os.Build.MANUFACTURER;
 
-                            String modelName = android.os.Build.MODEL;
-                            deviceName = android.os.Build.MANUFACTURER;
-
-                            Bundle b3 = new Bundle();
-                            b3.putString("packageName", packageName);
-                            b3.putString("deviceId", deviceID);
-                            b3.putString("modelName", deviceName);
-                            b3.putString("modelNumber", modelName);
+                        Bundle b3 = new Bundle();
+                        b3.putString("packageName", packageName);
+                        b3.putString("deviceId", deviceID);
+                        b3.putString("modelName", deviceName);
+                        b3.putString("modelNumber", modelName);
+                        b3.putString("sessionId", currentSessionId);
 
 //                        String json = "{\"event_name\":" + "\"" + eventName + "\"" + "," + "\"params\":" + utils.bundleToJsonString3(bundle) + "," + "\"meta\":" + utils.bundleToJsonString3(bundle2) + "}";
-                            String json = utils.bundleToJsonString3(b3);
-                            Log.d("OUR_JSON_RES_PACKAGE_B3", json);
+                        String json = utils.bundleToJsonString3(b3);
+                        Log.d("OUR_JSON_RES_PACKAGE_B3", json);
+
+                        // Step 4: Make the POST network call
+//                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
+                        String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests/check/device";
+                        URL url = new URL(urlEndpoint);
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                        connection.setRequestMethod("POST");
+                        connection.setRequestProperty("Content-Type", "application/json");
+                        connection.setRequestProperty("Accept", "application/json");
+                        connection.setDoOutput(true);
+
+                        try (OutputStream outputStream = connection.getOutputStream()) {
+                            byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                            outputStream.write(input, 0, input.length);
+                        }
+
+                        int responseCode = connection.getResponseCode();
+                        // Process the response as needed
+
+                        if (responseCode == 200) {
+                            try (InputStream inputStream = connection.getInputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+//                                Log.d("RES_CODE_HERE_RES_PACKAGE", bufferedReader.readLine() + " ");
+                                response[0] = bufferedReader.readLine();
+                                Log.d("RES_0", "run: " + response[0]);
+
+                                String jsonString = response[0];
+
+                                // Create a JSONObject from the JSON string
+                                JSONObject jsonObject = new JSONObject(jsonString);
+
+                                // Read the value of the "success" key
+                                String status = jsonObject.getString("status");
+                                Log.d("OUR_STATUS", "run: " + status);
+
+                                if (status.equals("SUCCESS")) {
+                                    JSONObject jsonData = jsonObject.getJSONObject("data");
+                                    Log.d("OUR_STATUS", "run: " + jsonData);
+
+                                    currentSessionId = jsonData.getString("sessionId");
+                                    Log.d("OUR_STATUS", "run: " + currentSessionId);
+
+
+                                }
+
+                            }
+                        }
+
+                        if (responseCode == 500) {
+                            Log.d("MAKE_ERROR", "App's package name is not registerd with tagmate");
+                        }
+
+                        Log.d("YOUR_RES_CODE_PACKAGE", "responseCode: " + responseCode);
+
+                        connection.disconnect();
+
+                    } catch (Exception e) {
+                        Log.d("YOUR_RES_CATCH", "error: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+
+                    try {
+                        if (!currentSessionId.isEmpty() && !currentSessionId.equals("") && !currentSessionId.contains("null")) {
+                            String json = "{\"event_name\":" + "\"" + eventName + "\"" + "," + "\"params\":"
+                                    + utils.bundleToJsonString3(bundle) + "," + "\"meta\":"
+                                    + utils.bundleToJsonString3(bundle2) + "}";
+
+                            Log.d("OUR_JSON_RES", json);
 
                             // Step 4: Make the POST network call
-//                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
-                            String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests/check/device";
+//                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests";
+                            String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests";
                             URL url = new URL(urlEndpoint);
                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -187,75 +257,8 @@ public class TagmateAnalytics {
 
                             if (responseCode == 200) {
                                 try (InputStream inputStream = connection.getInputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-//                                Log.d("RES_CODE_HERE_RES_PACKAGE", bufferedReader.readLine() + " ");
+                                    Log.d("RES_CODE_HERE_RES", bufferedReader.readLine() + " ");
                                     response[0] = bufferedReader.readLine();
-                                    Log.d("RES_0", "run: " + response[0]);
-
-                                    String jsonString = response[0];
-
-                                    // Create a JSONObject from the JSON string
-                                    JSONObject jsonObject = new JSONObject(jsonString);
-
-                                    // Read the value of the "success" key
-                                    String status = jsonObject.getString("status");
-                                    Log.d("OUR_STATUS", "run: " + status);
-
-                                    if (status.equals("SUCCESS")) {
-                                        JSONObject jsonData = jsonObject.getJSONObject("data");
-                                        Log.d("OUR_STATUS", "run: " + jsonData);
-
-                                        currentSessionId = jsonData.getString("sessionId");
-                                        Log.d("OUR_STATUS", "run: " + currentSessionId);
-
-
-                                    }
-
-                                }
-                            }
-
-                            if (responseCode == 500) {
-                                Log.d("MAKE_ERROR", "App's package name is not registerd with tagmate");
-                            }
-
-                            Log.d("YOUR_RES_CODE_PACKAGE", "responseCode: " + responseCode);
-
-                            connection.disconnect();
-
-                        } catch (Exception e) {
-                            Log.d("YOUR_RES_CATCH", "error: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-
-
-                        try {
-                            if (!currentSessionId.isEmpty() && !currentSessionId.equals("") && !currentSessionId.contains("null")) {
-                                String json = "{\"event_name\":" + "\"" + eventName + "\"" + "," + "\"params\":" + utils.bundleToJsonString3(bundle) + "," + "\"meta\":" + utils.bundleToJsonString3(bundle2) + "}";
-
-                                Log.d("OUR_JSON_RES", json);
-
-                                // Step 4: Make the POST network call
-//                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests";
-                                String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests";
-                                URL url = new URL(urlEndpoint);
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                                connection.setRequestMethod("POST");
-                                connection.setRequestProperty("Content-Type", "application/json");
-                                connection.setRequestProperty("Accept", "application/json");
-                                connection.setDoOutput(true);
-
-                                try (OutputStream outputStream = connection.getOutputStream()) {
-                                    byte[] input = json.getBytes(StandardCharsets.UTF_8);
-                                    outputStream.write(input, 0, input.length);
-                                }
-
-                                int responseCode = connection.getResponseCode();
-                                // Process the response as needed
-
-                                if (responseCode == 200) {
-                                    try (InputStream inputStream = connection.getInputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-                                        Log.d("RES_CODE_HERE_RES", bufferedReader.readLine() + " ");
-                                        response[0] = bufferedReader.readLine();
                                /* String jsonString = response[0];
 
                                 // Create a JSONObject from the JSON string
@@ -264,20 +267,19 @@ public class TagmateAnalytics {
                                 // Read the value of the "success" key
                                 String status = jsonObject.getString("status");
                                 Log.d("OUR_STATUS", "run: "+status);*/
-                                    }
                                 }
-
-                                Log.d("YOUR_RES_CODE", "responseCode: " + responseCode);
-
-                                connection.disconnect();
                             }
-                            else {
-                                Log.d("CHECK_SESSION", "session is getting null ");
-                            }
-                        } catch (Exception e) {
-                            Log.d("YOUR_RES_C", "error: " + e.getMessage());
-                            e.printStackTrace();
+
+                            Log.d("YOUR_RES_CODE", "responseCode: " + responseCode);
+
+                            connection.disconnect();
+                        } else {
+                            Log.d("CHECK_SESSION", "session is getting null ");
                         }
+                    } catch (Exception e) {
+                        Log.d("YOUR_RES_C", "error: " + e.getMessage());
+                        e.printStackTrace();
+                    }
 
                  /*       //DeviceId and PackageName
                         try {
@@ -355,8 +357,8 @@ public class TagmateAnalytics {
                             e.printStackTrace();
                         }*/
 
-                    }
-                });
+                }
+            });
 
         } else {
             _instance.logEvent(eventName, bundle);
