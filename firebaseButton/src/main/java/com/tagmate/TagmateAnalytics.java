@@ -144,7 +144,7 @@ public class TagmateAnalytics {
             bundle2.putString("app_instance_id", sharedPreferences.getString("APP_INSTANCE_ID", ""));
             bundle2.putString("deviceId", deviceID);
             bundle2.putString("app_package_name", packageName);
-            bundle2.putString("sessionId", currentSessionId);
+//            bundle2.putString("sessionId", currentSessionId);
 
             executorService.submit(new Runnable() {
                 @Override
@@ -161,7 +161,7 @@ public class TagmateAnalytics {
                         b3.putString("deviceId", deviceID);
                         b3.putString("modelName", deviceName);
                         b3.putString("modelNumber", modelName);
-                        b3.putString("sessionId", currentSessionId);
+//                        b3.putString("sessionId", currentSessionId);
 
 //                        String json = "{\"event_name\":" + "\"" + eventName + "\"" + "," + "\"params\":" + utils.bundleToJsonString3(bundle) + "," + "\"meta\":" + utils.bundleToJsonString3(bundle2) + "}";
                         String json = utils.bundleToJsonString3(b3);
@@ -229,7 +229,11 @@ public class TagmateAnalytics {
 
 
                     try {
-                        if (!currentSessionId.isEmpty() && !currentSessionId.equals("") && !currentSessionId.contains("null")) {
+                        if (!currentSessionId.isEmpty() && !currentSessionId.equals("") &&
+                                !currentSessionId.contains("null")) {
+
+                            bundle2.putString("sessionId", currentSessionId);
+
                             String json = "{\"event_name\":" + "\"" + eventName + "\"" + "," + "\"params\":"
                                     + utils.bundleToJsonString3(bundle) + "," + "\"meta\":"
                                     + utils.bundleToJsonString3(bundle2) + "}";
