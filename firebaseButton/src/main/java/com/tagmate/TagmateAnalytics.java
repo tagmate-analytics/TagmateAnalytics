@@ -208,7 +208,6 @@ public class TagmateAnalytics {
                                     currentSessionId = jsonData.getString("sessionId");
                                     Log.d("OUR_STATUS", "run: " + currentSessionId);
 
-
                                 }
 
                             }
