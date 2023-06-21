@@ -168,9 +168,9 @@ public class TagmateAnalytics {
                         Log.d("OUR_JSON_RES_PACKAGE_B3", json);
 
                         // Step 4: Make the POST network call
-//                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
+                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
 //                        String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests/check/device";
-                        String urlEndpoint = "http://10.0.2.2:3050/api/v1/debugger/appRequests/check/device";
+//                        String urlEndpoint = "http://10.0.2.2:3050/api/v1/debugger/appRequests/check/device";
                         URL url = new URL(urlEndpoint);
                         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -241,9 +241,9 @@ public class TagmateAnalytics {
                             Log.d("OUR_JSON_RES", json);
 
                             // Step 4: Make the POST network call
-//                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests";
+                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests";
 //                            String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests";
-                            String urlEndpoint = "http://10.0.2.2:3050/api/v1/debugger/appRequests";
+//                            String urlEndpoint = "http://10.0.2.2:3050/api/v1/debugger/appRequests";
                             URL url = new URL(urlEndpoint);
                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
