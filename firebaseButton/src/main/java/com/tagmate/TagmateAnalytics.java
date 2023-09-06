@@ -1,7 +1,6 @@
 package com.tagmate;
 
 import static android.content.Context.MODE_PRIVATE;
-import static android.content.Intent.getIntent;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -61,7 +60,7 @@ public class TagmateAnalytics {
 
         myEdit.putBoolean("SERVER_STATUS", true);
 
-        myEdit.commit();
+//        myEdit.commit();
 
         //deviceID
         deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -77,6 +76,11 @@ public class TagmateAnalytics {
             String textToCopy = deviceID;
             ClipData clipData = ClipData.newPlainText("Device ID", textToCopy);
             clipboardManager.setPrimaryClip(clipData);
+
+            Log.d("TAG_FIRST_RUN", "TagmateAnalytics: "+ sharedPreferences.getBoolean("firstrun",false));
+
+            myEdit.putBoolean("firstRun", false);
+            myEdit.commit();
         }
 
         //packageName
@@ -174,8 +178,9 @@ public class TagmateAnalytics {
                             Log.d("OUR_JSON_RES", json);
 
                             // Step 4: Make the POST network call
-                        String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests";
-//                            String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests";
+//                            String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests";
+//                            String urlEndpoint = "http://192.168.2.155:3050/api/v1/debugger/appRequests";
+                            String urlEndpoint = "https://debugger-beta.tagmate.app/api/v1/debugger/appRequests";
 //                            String urlEndpoint = "http://10.0.2.2:3050/api/v1/debugger/appRequests";
                             URL url = new URL(urlEndpoint);
                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -304,7 +309,7 @@ public class TagmateAnalytics {
 
     }
 
-    public void apiPostDevice(){
+    public void apiPostDevice() {
         //DeviceId and PackageName
         try {
 
@@ -325,7 +330,8 @@ public class TagmateAnalytics {
             Log.d("OUR_JSON_RES_PACKAGE_B3", json);
 
             // Step 4: Make the POST network call
-            String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
+//            String urlEndpoint = "https://debugger-dev.tagmate.app/api/v1/debugger/appRequests/check/device";
+            String urlEndpoint = "https://debugger-beta.tagmate.app/api/v1/debugger/appRequests/check/device";
 //                        String urlEndpoint = "http://192.168.0.218:3050/api/v1/debugger/appRequests/check/device";
 //                        String urlEndpoint = "http://10.0.2.2:3050/api/v1/debugger/appRequests/check/device";
             URL url = new URL(urlEndpoint);
