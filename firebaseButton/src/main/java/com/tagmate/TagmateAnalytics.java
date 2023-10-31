@@ -164,7 +164,6 @@ public class TagmateAnalytics {
             executorService.submit(new Runnable() {
                 @Override
                 public void run() {
-
                     try {
                         if (!currentSessionId.isEmpty() && !currentSessionId.equals("") &&
                                 !currentSessionId.contains("null")) {
@@ -310,6 +309,9 @@ public class TagmateAnalytics {
     }
 
     public void apiPostDevice() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
         //DeviceId and PackageName
         try {
 
@@ -389,6 +391,8 @@ public class TagmateAnalytics {
             Log.d("YOUR_RES_CATCH", "error: " + e.getMessage());
             e.printStackTrace();
         }
+            }
+        }).start();
     }
 
     public void setUserProperty(String name, String value) {
