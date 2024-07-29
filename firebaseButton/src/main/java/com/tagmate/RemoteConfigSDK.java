@@ -1,8 +1,8 @@
 package com.tagmate;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -10,29 +10,33 @@ import java.net.URL;
 import org.json.JSONObject;
 
 public class RemoteConfigSDK {
-    private static final String PREFS_NAME = "RemoteConfigPrefs";
-    private static final String BUTTON_TEXT_KEY = "button_text";
+    private static final String TAG = "RemoteConfigSDK";
     private static final String DEFAULT_BUTTON_TEXT = "Let's go";
-    private SharedPreferences sharedPreferences;
 
     private static RemoteConfigSDK instance;
 
-    private RemoteConfigSDK(Context context){
-        sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-    }
+    private String buttonText = DEFAULT_BUTTON_TEXT;
 
-    public static RemoteConfigSDK getInstance(Context context){
-        if (instance == null){
-            instance = new RemoteConfigSDK(context);
+    private RemoteConfigSDK() {}
+
+    public static RemoteConfigSDK getInstance() {
+        if (instance == null) {
+            instance = new RemoteConfigSDK();
         }
         return instance;
     }
 
-    public void fetchRemoteConfig() {
-        new FetchRemoteConfigTask().execute("http://192.168.2.162:3000/api/getButtonText");
+    public void fetchRemoteConfig(OnRemoteConfigFetchedListener listener) {
+        new FetchRemoteConfigTask(listener).execute("http://192.168.253.199:3000/api/getButtonText");
     }
 
     private class FetchRemoteConfigTask extends AsyncTask<String, Void, String> {
+        private OnRemoteConfigFetchedListener listener;
+
+        public FetchRemoteConfigTask(OnRemoteConfigFetchedListener listener) {
+            this.listener = listener;
+        }
+
         @Override
         protected String doInBackground(String... urls) {
             try {
@@ -51,7 +55,7 @@ public class RemoteConfigSDK {
                     urlConnection.disconnect();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error during API call", e);
                 return null;
             }
         }
@@ -59,20 +63,31 @@ public class RemoteConfigSDK {
         @Override
         protected void onPostExecute(String response) {
             if (response != null) {
+                Log.d(TAG, "API Response: " + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    String buttonText = jsonObject.getString("buttonText");
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(BUTTON_TEXT_KEY, buttonText);
-                    editor.apply();
+                    buttonText = jsonObject.getString("buttonText");
+                    Log.d(TAG, "Button Text Updated: " + buttonText);
+                    if (listener != null) {
+                        listener.onRemoteConfigFetched(buttonText);
+                    }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Error parsing JSON response", e);
+                }
+            } else {
+                Log.e(TAG, "No response received from API");
+                if (listener != null) {
+                    listener.onRemoteConfigFetched(DEFAULT_BUTTON_TEXT);
                 }
             }
         }
     }
 
     public String getButtonText() {
-        return sharedPreferences.getString(BUTTON_TEXT_KEY, DEFAULT_BUTTON_TEXT);
+        return buttonText;
+    }
+
+    public interface OnRemoteConfigFetchedListener {
+        void onRemoteConfigFetched(String buttonText);
     }
 }
